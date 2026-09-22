@@ -1,84 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+from urllib import parse 
+from urllib.parse import urlparse, parse_qs
+import crud_clientes
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python como backend</title>
+import json
 
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
-</head>
+port = 3000
+crudClientes = crud_clientes.crud_clientes()
 
-<body>
+class miServidor(SimpleHTTPRequestHandler):
+    def do_POST(self):
+        longitud = int(self.headers['Content-Length'])
+        datos = self.rfile.read(longitud)
+        datos = datos.decode("utf-8")
+        datos = parse.unquote(datos)
+        datos = json.loads(datos)
+        respuesta = {'msg': crudClientes.administrar(datos)}
 
-    <div class="container-fluid">
+        self.send_response(200)
+        self.send_header("Content-type","application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(respuesta).encode("utf-8"))
 
-        Hola: <span id="divRespuesta"></span>
+    def do_GET(self):
+        urlParse = urlparse(self.path)
+        qs = parse_qs(urlParse.query)
+       
+        if urlParse.path == "/saludo":
+            saludo = qs["nombre"][0] + " bienvenido a Python"
+            
+            self.send_response(200)
+            self.send_header("Content-type","text/html")
+            self.end_headers()
+            self.wfile.write(saludo.encode("utf-8"))
 
-        <form id="frmSaludo" class="mt-3">
+        if self.path == "/":
+            self.path = "/index.html"
+            return SimpleHTTPRequestHandler.do_GET(self)
 
-            <div class="row">
-                <div class="col-6">
-
-                    <input
-                        placeholder="Email"
-                        name="txtEmailCliente"
-                        id="txtEmailCliente"
-                        class="form-control"
-                        type="text">
-
-                </div>
-            </div>
-
-            <div class="row mt-3">
-                <div class="col">
-
-                    <select
-                        name="cboTipo"
-                        id="cboTipo"
-                        class="form-select">
-
-                        <option value="">Seleccione</option>
-                        <option value="1">Cliente</option>
-                        <option value="2">Proveedor</option>
-                        <option value="3">Empleado</option>
-
-                    </select>
-
-                </div>
-            </div>
-
-            <button class="btn btn-primary mt-3" type="submit">
-                Saludar
-            </button>
-
-        </form>
-
-    </div>
-
-    <script>
-
-        const frmSaludo = document.getElementById("frmSaludo");
-        const txtEmailCliente = document.getElementById("txtEmailCliente");
-        const divRespuesta = document.getElementById("divRespuesta");
-
-        frmSaludo.onsubmit = function(e) {
-
-            e.preventDefault();
-
-            fetch(`/saludo?nombre=${txtEmailCliente.value}`)
-                .then(response => response.text())
-                .then(data => {
-
-                    divRespuesta.innerHTML = data;
-
-                });
-
-        };
-
-    </script>
-
-</body>
-
-</html>
+print(f"Servidor corriendo en el puerto {port}")
+server = HTTPServer(("localhost",port),miServidor)
+server.serve_forever()
