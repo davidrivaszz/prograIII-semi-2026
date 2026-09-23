@@ -26,14 +26,13 @@ class miServidor(SimpleHTTPRequestHandler):
         urlParse = urlparse(self.path)
         qs = parse_qs(urlParse.query)
        
-        if urlParse.path == "/saludo":
-            saludo = qs["nombre"][0] + " bienvenido a Python"
-            
+        if urlParse.path =="/clientes":
+            datos = crud_clientes.consultar("")
             self.send_response(200)
-            self.send_header("Content-type","text/html")
+            self.send_header("Content-type", "application/json")
             self.end_headers()
-            self.wfile.write(saludo.encode("utf-8"))
-
+            self.wfile.write(json.dumps(datos).encode("utf-8"))
+            
         if self.path == "/":
             self.path = "/index.html"
             return SimpleHTTPRequestHandler.do_GET(self)
