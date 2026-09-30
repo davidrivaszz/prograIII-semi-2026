@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -55,7 +55,7 @@
                         <div class="row">
                             <div class="col">
                                 <input type="submit" value="Guardar" class="btn btn-primary">
-                                <input type="button" value="Buscar" class="btn btn-secondary">
+                                <input type="button" value="Buscar" id="btnBuscar" class="btn btn-secondary">
                                 <input type="reset" value="Limpiar" class="btn btn-warning">
                             </div>
                         </div>
@@ -99,11 +99,133 @@
                 </form>
             </div>
         </div>
+
+        <!-- ================= IMPUESTO A LAS ACTIVIDADES ECONOMICAS ================= -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>IMPUESTO A LAS ACTIVIDADES ECONOMICAS</strong> &mdash; Cliente:
+                        <span id="lblClienteImpuesto">(haga clic en un cliente de la lista)</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="msgTipoCliente" class="alert alert-warning d-none"></div>
+                        <div class="row">
+                            <!-- Formulario del periodo -->
+                            <div class="col-md-4">
+                                <form id="frmPeriodo">
+                                    <fieldset id="fsPeriodo" disabled>
+                                        <label class="form-label mb-0">Producto</label>
+                                        <select id="cboProducto" class="form-select mb-2"></select>
+
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="form-label mb-0">Desde (incluida)</label>
+                                                <input type="date" id="txtDesde" class="form-control mb-2" required>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label mb-0">Hasta (no incluida)</label>
+                                                <input type="date" id="txtHasta" class="form-control mb-2" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <label class="form-label mb-0">Monto o activo ($)</label>
+                                                <input type="number" id="txtMonto" class="form-control mb-2" step="0.01"
+                                                    min="0.01" required placeholder="0.00">
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="form-label mb-0">Cantidad</label>
+                                                <input type="number" id="txtCantidad" class="form-control mb-2"
+                                                    step="0.01" min="0.01" value="1.00">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="chkCerrarVigente">
+                                            <label class="form-check-label" for="chkCerrarVigente">
+                                                Cerrar el periodo vigente si se superpone (cambio de balance)
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="chkHistorico">
+                                            <label class="form-check-label" for="chkHistorico">
+                                                Registro historico (formula proporcional anterior)
+                                            </label>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">Guardar periodo</button>
+                                        <button type="button" id="btnLimpiarPeriodo"
+                                            class="btn btn-warning">Limpiar</button>
+                                    </fieldset>
+                                </form>
+                            </div>
+
+                            <!-- Detalle del calculo (RF 18) -->
+                            <div class="col-md-3">
+                                <div class="fw-bold mb-1">Detalle del calculo</div>
+                                <div id="divDetalle" class="text-muted">Ingrese producto y monto para calcular.</div>
+                            </div>
+
+                            <!-- Periodos registrados -->
+                            <div class="col-md-5">
+                                <div class="fw-bold mb-1">Periodos registrados</div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Desde</th>
+                                                <th>Hasta</th>
+                                                <th>Balance</th>
+                                                <th>Codigo</th>
+                                                <th>Precio</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblPeriodos"></tbody>
+                                    </table>
+                                </div>
+                                <!-- RF 21: se distinguen los dos totales -->
+                                <div class="alert alert-success py-2 mb-1">
+                                    Impuesto mensual vigente: <strong id="lblMensualVigente">$0.00</strong>
+                                </div>
+                                <div class="alert alert-secondary py-2 mb-0">
+                                    Total referencial de periodos registrados: <strong
+                                        id="lblTotalReferencial">$0.00</strong>
+                                    <small class="d-block">Es solo un total administrativo; no es una
+                                        mensualidad.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Simulador de cobro (seccion 15) -->
+                        <hr>
+                        <div class="fw-bold mb-1">Calculo de cobro (usa el producto seleccionado arriba)</div>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-2">
+                                <label class="form-label mb-0">Cobro desde</label>
+                                <input type="date" id="txtCobroDesde" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label mb-0">Cobro hasta (no incluida)</label>
+                                <input type="date" id="txtCobroHasta" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" id="btnCobro" class="btn btn-info">Calcular cobro</button>
+                            </div>
+                            <div class="col-md-6" id="divCobro"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 <script>
     var accion = 'nuevo',
-        idCliente = '';
+        idCliente = '',
+        clienteSel = null;
 
     frmCliente.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -118,10 +240,17 @@
         e.preventDefault();
         obtenerClientes(txtBuscarCliente.value);
     });
-    document.addEventListener("DOMContentLoaded", obtenerClientes);
+    btnBuscar.addEventListener('click', () => {
+        obtenerClientes(txtCodigoCliente.value || txtNombreCliente.value);
+    });
+    // Se usa una funcion flecha para que el evento no llegue como parametro "buscar"
+    document.addEventListener("DOMContentLoaded", () => {
+        obtenerClientes();
+        cargarProductos();
+    });
 
     async function obtenerClientes(buscar = "") {
-        let response = await fetch(`/clientes?buscar=${buscar}`),
+        let response = await fetch(`/clientes?buscar=${encodeURIComponent(buscar)}`),
             datos = await response.json();
         mostrarDatos(datos);
     }
@@ -156,9 +285,12 @@
         txtTelefonoCliente.value = data.telefono;
         txtEmailCliente.value = data.email;
         cboTipoPersona.value = data.tipo;
+
+        seleccionarClienteImpuesto(data);
     }
     function eliminarCliente(data, event) {
         event.preventDefault();
+        event.stopPropagation(); // evita que tambien se dispare el clic de la fila
         if (confirm(`¿Seguro de eliminar al cliente: ${data.nombre}?`)) {
             idCliente = data.idCliente;
             accion = "eliminar";
@@ -200,6 +332,153 @@
         txtEmailCliente.value = '';
         cboTipoPersona.value = 'particular';
     }
+
+    /* ===================== IMPUESTO A LAS ACTIVIDADES ECONOMICAS ===================== */
+    const fmt = v => Number(v).toFixed(2);
+    const postJSON = async (url, datos) => {
+        let r = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+        return await r.json();
+    };
+
+    async function cargarProductos() {
+        let r = await fetch('/productos'), productos = await r.json();
+        cboProducto.innerHTML = '<option value="">-- Seleccione comercio o industria --</option>' +
+            productos.map(p => `<option value="${p.idProducto}">${p.codigo} - ${p.nombre}</option>`).join('');
+    }
+
+    function seleccionarClienteImpuesto(data) {
+        clienteSel = data;
+        lblClienteImpuesto.textContent = `${data.codigo} - ${data.nombre} (${data.tipo})`;
+        if (data.tipo !== 'empresa') {
+            msgTipoCliente.textContent = 'El Impuesto a las Actividades Económicas requiere un cliente de tipo empresa.';
+            msgTipoCliente.classList.remove('d-none');
+            fsPeriodo.disabled = true;
+        } else {
+            msgTipoCliente.classList.add('d-none');
+            fsPeriodo.disabled = false;
+        }
+        limpiarPeriodo();
+        cargarPeriodos();
+    }
+
+    function datosPeriodo() {
+        return {
+            idCliente: clienteSel ? clienteSel.idCliente : '',
+            idProducto: cboProducto.value,
+            desde: txtDesde.value,
+            hasta: txtHasta.value,
+            monto: txtMonto.value,
+            cantidad: txtCantidad.value,
+            cerrar_vigente: chkCerrarVigente.checked,
+            formula: chkHistorico.checked ? 'v1_proporcional' : 'v2_bloques'
+        };
+    }
+
+    // RF 17, 19 y 20: recalcular al cambiar monto, producto o fecha de inicio
+    async function calcularPeriodo() {
+        if (!clienteSel || clienteSel.tipo !== 'empresa') return;
+        if (!txtMonto.value && !cboProducto.value) return;
+        let res = await postJSON('/calcular', datosPeriodo());
+        mostrarDetalle(res);
+    }
+
+    // RF 18: detalle visible
+    function mostrarDetalle(res) {
+        if (!res.ok) {
+            divDetalle.innerHTML = `<div class="alert alert-warning mb-0 py-2">${res.msg}</div>`;
+            return;
+        }
+        let d = res.detalle;
+        divDetalle.innerHTML = `
+            <table class="table table-sm table-bordered mb-0"><tbody>
+                <tr><th>Balance</th><td>$${fmt(d.balance)}</td></tr>
+                <tr><th>Rango aplicado</th><td>$${fmt(d.rango_desde)} a $${fmt(d.rango_hasta)}</td></tr>
+                <tr><th>Precio base</th><td>$${fmt(d.precio_base)}</td></tr>
+                <tr><th>Excedente</th><td>$${fmt(d.excedente)}</td></tr>
+                <tr><th>Bloques</th><td>${d.bloques}</td></tr>
+                <tr><th>Adicional</th><td>$${fmt(d.adicional)}</td></tr>
+                <tr><th>Porcentaje</th><td>${Number(d.porcentaje)}%</td></tr>
+                <tr><th>Formula</th><td><small>${d.expresion}<br>(${d.formula})</small></td></tr>
+                <tr class="table-success"><th>Impuesto mensual</th><td><strong>$${fmt(d.precio_mostrado)}</strong></td></tr>
+                <tr><th>Subtotal</th><td>$${fmt(d.subtotal)}</td></tr>
+            </tbody></table>`;
+    }
+
+    async function cargarPeriodos() {
+        if (!clienteSel) return;
+        let r = await fetch(`/periodos?idCliente=${clienteSel.idCliente}`), d = await r.json();
+        tblPeriodos.innerHTML = d.periodos.map(p => `
+            <tr>
+                <td>${p.desde}</td>
+                <td>${p.hasta}</td>
+                <td>$${fmt(p.monto)}</td>
+                <td>${p.codigo}</td>
+                <td>$${fmt(p.precio)}</td>
+                <td>${p.estado}${p.facturado == 1 ? ' (facturado)' : ''}</td>
+            </tr>`).join('');
+        lblMensualVigente.textContent = '$' + fmt(d.mensual_vigente);
+        lblTotalReferencial.textContent = '$' + fmt(d.total_referencial);
+    }
+
+    function limpiarPeriodo() {
+        txtDesde.value = '';
+        txtHasta.value = '';
+        txtMonto.value = '';
+        txtCantidad.value = '1.00';
+        chkCerrarVigente.checked = false;
+        chkHistorico.checked = false;
+        cboProducto.value = '';
+        divDetalle.innerHTML = 'Ingrese producto y monto para calcular.';
+    }
+
+    [txtMonto, txtCantidad, txtDesde, txtHasta].forEach(el => el.addEventListener('input', calcularPeriodo));
+    [cboProducto, chkHistorico].forEach(el => el.addEventListener('change', calcularPeriodo));
+    btnLimpiarPeriodo.addEventListener('click', limpiarPeriodo);
+
+    // Flujo: calcular -> confirmar -> guardar
+    frmPeriodo.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        let datos = datosPeriodo();
+        let calc = await postJSON('/calcular', datos);
+        mostrarDetalle(calc);
+        if (!calc.ok) {
+            alert(calc.msg);
+            return;
+        }
+        let d = calc.detalle;
+        if (!confirm(`Se guardará el periodo ${datos.desde} a ${datos.hasta}\n` +
+            `Balance: $${fmt(d.balance)}\nImpuesto mensual: $${fmt(d.precio_mostrado)}\n\n¿Confirma?`)) {
+            return;
+        }
+        let res = await postJSON('/periodo', datos);
+        if (res.msg !== 'ok') {
+            alert(res.msg);
+            return;
+        }
+        if (res.aviso) alert(res.aviso);
+        limpiarPeriodo();
+        cargarPeriodos();
+    });
+
+
+    btnCobro.addEventListener('click', async () => {
+        if (!clienteSel) { alert('Seleccione un cliente.'); return; }
+        if (!cboProducto.value) { alert('Confirme si la actividad corresponde a comercio o industria.'); return; }
+        let q = `idCliente=${clienteSel.idCliente}&idProducto=${cboProducto.value}` +
+            `&desde=${txtCobroDesde.value}&hasta=${txtCobroHasta.value}`;
+        let r = await fetch(`/cobro?${q}`), res = await r.json();
+        if (!res.ok) {
+            divCobro.innerHTML = `<div class="alert alert-warning py-2 mb-0">${res.msg}</div>`;
+            return;
+        }
+        divCobro.innerHTML = res.detalle.map(x =>
+            `<div>${x.desde} a ${x.hasta}: ${fmt(x.cantidad)} x $${fmt(x.precio_mensual)} x ${x.meses} meses = <strong>$${fmt(x.cargo)}</strong></div>`
+        ).join('') + `<div class="mt-1"><strong>Total a cobrar: $${fmt(res.total)}</strong></div>`;
+    });
 </script>
 
 </html>
