@@ -12,35 +12,36 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-6">
-                <form id="frmCliente">
+                <form id="frmproducto">
                     <div class="container text-center">
                         <div class="row">
                             <div class="col">
-                                <input pattern="^[0-9]{3,10}$" required placeholder="Codigo" name="txtCodigoCliente"
-                                    id="txtCodigoCliente" class="form-control" type="text">
+                                <input pattern="^[0-9]{3,10}$" required placeholder="Codigo" name="txtCodigoproducto"
+                                    id="txtCodigoproducto" class="form-control" type="text">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <input pattern="^[A-Za-záéíóúÁÉÍÓÚñÑ ]{3,}$" required placeholder="Nombre"
-                                    name="txtNombreCliente" id="txtNombreCliente" class="form-control" type="text">
+                                <input pattern="^[A-Za-záéíóúÁÉÍÓÚñÑ ]{3,}$" required placeholder="Descripcion"
+                                    name="txtDescripcionproducto" id="txtDescripcionproducto" class="form-control"
+                                    type="text">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <input placeholder="Direccion" name="txtDireccionCliente" id="txtDireccionCliente"
+                                <input placeholder="Direccion" name="txtDireccionproducto" id="txtDireccionproducto"
                                     class="form-control" type="text">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <input pattern="^[0-9]{4}-[0-9]{4}$" placeholder="Telefono" name="txtTelefonoCliente"
-                                    id="txtTelefonoCliente" class="form-control" type="text">
+                                <input pattern="^[0-9]{4}-[0-9]{4}$" placeholder="Telefono" name="txtTelefonoproducto"
+                                    id="txtTelefonoproducto" class="form-control" type="text">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <input placeholder="Email" name="txtEmailCliente" id="txtEmailCliente"
+                                <input placeholder="Email" name="txtEmailproducto" id="txtEmailproducto"
                                     class="form-control" type="email">
                             </div>
                         </div>
@@ -63,10 +64,10 @@
                 </form>
             </div>
             <div class="col-6">
-                <form id="frmConsultarCliente">
+                <form id="frmConsultarproducto">
                     <div class="container text-center">
                         <div class="row">
-                            <div class="col">BUSQUEDA DE CLIENTES</div>
+                            <div class="col">BUSQUEDA DE productoS</div>
                         </div>
                         <div class="row">
                             <div class="col">
@@ -75,14 +76,14 @@
                                         <thead>
                                             <tr>
                                                 <th colspan="7">
-                                                    <input type="search" placeholder="buscar por codigo, nombre"
-                                                        id="txtBuscarCliente" name="txtBuscarCliente"
+                                                    <input type="search" placeholder="buscar por codigo, Descripcion"
+                                                        id="txtBuscarproducto" name="txtBuscarproducto"
                                                         class="form-control">
                                                 </th>
                                             </tr>
                                             <tr>
                                                 <th>Codigo</th>
-                                                <th>Nombre</th>
+                                                <th>Descripcion</th>
                                                 <th>Direccion</th>
                                                 <th>Telefono</th>
                                                 <th>Email</th>
@@ -90,7 +91,7 @@
                                                 <th></th>
                                             </tr>
                                         </thead>
-                                        <tbody id="tblClientes"></tbody>
+                                        <tbody id="tblproductos"></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -105,11 +106,11 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <strong>IMPUESTO A LAS ACTIVIDADES ECONOMICAS</strong> &mdash; Cliente:
-                        <span id="lblClienteImpuesto">(haga clic en un cliente de la lista)</span>
+                        <strong>IMPUESTO A LAS ACTIVIDADES ECONOMICAS</strong> &mdash; producto:
+                        <span id="lblproductoImpuesto">(haga clic en un producto de la lista)</span>
                     </div>
                     <div class="card-body">
-                        <div id="msgTipoCliente" class="alert alert-warning d-none"></div>
+                        <div id="msgTipoproducto" class="alert alert-warning d-none"></div>
                         <div class="row">
                             <!-- Formulario del periodo -->
                             <div class="col-md-4">
@@ -224,33 +225,33 @@
 </body>
 <script>
     var accion = 'nuevo',
-        idCliente = '',
-        clienteSel = null;
+        idproducto = '',
+        productoSel = null;
 
-    frmCliente.addEventListener('submit', (e) => {
+    frmproducto.addEventListener('submit', (e) => {
         e.preventDefault();
-        guardarClientes();
+        guardarproductos();
 
     });
-    frmCliente.addEventListener('reset', (e) => {
+    frmproducto.addEventListener('reset', (e) => {
         e.preventDefault();
         limpiarFormulario();
     });
-    txtBuscarCliente.addEventListener('keyup', (e) => {
+    txtBuscarproducto.addEventListener('keyup', (e) => {
         e.preventDefault();
-        obtenerClientes(txtBuscarCliente.value);
+        obtenerproductos(txtBuscarproducto.value);
     });
     btnBuscar.addEventListener('click', () => {
-        obtenerClientes(txtCodigoCliente.value || txtNombreCliente.value);
+        obtenerproductos(txtCodigoproducto.value || txtDescripcionproducto.value);
     });
     // Se usa una funcion flecha para que el evento no llegue como parametro "buscar"
     document.addEventListener("DOMContentLoaded", () => {
-        obtenerClientes();
+        obtenerproductos();
         cargarProductos();
     });
 
-    async function obtenerClientes(buscar = "") {
-        let response = await fetch(`/clientes?buscar=${encodeURIComponent(buscar)}`),
+    async function obtenerproductos(buscar = "") {
+        let response = await fetch(`/productos?buscar=${encodeURIComponent(buscar)}`),
             datos = await response.json();
         mostrarDatos(datos);
     }
@@ -258,57 +259,57 @@
         let filas = "";
         datos.forEach(e => {
             filas += `
-                <tr onClick='modificarCliente(${JSON.stringify(e)}, event)'>
+                <tr onClick='modificarproducto(${JSON.stringify(e)}, event)'>
                     <td>${e.codigo}</td>
-                    <td>${e.nombre}</td>
+                    <td>${e.Descripcion}</td>
                     <td>${e.direccion}</td>
                     <td>${e.telefono}</td>
                     <td>${e.email}</td>
                     <td>${e.tipo}</td>
                     <td>
-                        <input onClick='eliminarCliente(${JSON.stringify(e)}, event)' 
+                        <input onClick='eliminarproducto(${JSON.stringify(e)}, event)' 
                             type="button" value="DEL" class="btn btn-danger"/>
                     </td>
                 </tr>
             `;
         });
-        tblClientes.innerHTML = filas;
+        tblproductos.innerHTML = filas;
     }
-    function modificarCliente(data, event) {
+    function modificarproducto(data, event) {
         event.preventDefault();
-        idCliente = data.idCliente;
+        idproducto = data.idproducto;
         accion = "modificar";
 
-        txtCodigoCliente.value = data.codigo;
-        txtNombreCliente.value = data.nombre;
-        txtDireccionCliente.value = data.direccion;
-        txtTelefonoCliente.value = data.telefono;
-        txtEmailCliente.value = data.email;
+        txtCodigoproducto.value = data.codigo;
+        txtDescripcionproducto.value = data.Descripcion;
+        txtDireccionproducto.value = data.direccion;
+        txtTelefonoproducto.value = data.telefono;
+        txtEmailproducto.value = data.email;
         cboTipoPersona.value = data.tipo;
 
-        seleccionarClienteImpuesto(data);
+        seleccionarproductoImpuesto(data);
     }
-    function eliminarCliente(data, event) {
+    function eliminarproducto(data, event) {
         event.preventDefault();
         event.stopPropagation(); // evita que tambien se dispare el clic de la fila
-        if (confirm(`¿Seguro de eliminar al cliente: ${data.nombre}?`)) {
-            idCliente = data.idCliente;
+        if (confirm(`¿Seguro de eliminar al producto: ${data.Descripcion}?`)) {
+            idproducto = data.idproducto;
             accion = "eliminar";
-            guardarClientes();
+            guardarproductos();
         }
     }
-    async function guardarClientes() {
+    async function guardarproductos() {
         let datos = {
-            codigo: txtCodigoCliente.value,
-            nombre: txtNombreCliente.value,
-            direccion: txtDireccionCliente.value,
-            telefono: txtTelefonoCliente.value,
-            email: txtEmailCliente.value,
+            codigo: txtCodigoproducto.value,
+            Descripcion: txtDescripcionproducto.value,
+            direccion: txtDireccionproducto.value,
+            telefono: txtTelefonoproducto.value,
+            email: txtEmailproducto.value,
             tipo: cboTipoPersona.value,
             accion,
-            idCliente
+            idproducto
         };
-        let response = await fetch('/cliente', {
+        let response = await fetch('/producto', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -319,17 +320,17 @@
             alert("Error: " + respuesta.msg);
             return;
         }
-        obtenerClientes();
+        obtenerproductos();
         limpiarFormulario();
     }
     function limpiarFormulario() {
         accion = 'nuevo';
-        idCliente = '';
-        txtCodigoCliente.value = '';
-        txtNombreCliente.value = '';
-        txtDireccionCliente.value = '';
-        txtTelefonoCliente.value = '';
-        txtEmailCliente.value = '';
+        idproducto = '';
+        txtCodigoproducto.value = '';
+        txtDescripcionproducto.value = '';
+        txtDireccionproducto.value = '';
+        txtTelefonoproducto.value = '';
+        txtEmailproducto.value = '';
         cboTipoPersona.value = 'particular';
     }
 
@@ -347,18 +348,18 @@
     async function cargarProductos() {
         let r = await fetch('/productos'), productos = await r.json();
         cboProducto.innerHTML = '<option value="">-- Seleccione comercio o industria --</option>' +
-            productos.map(p => `<option value="${p.idProducto}">${p.codigo} - ${p.nombre}</option>`).join('');
+            productos.map(p => `<option value="${p.idProducto}">${p.codigo} - ${p.Descripcion}</option>`).join('');
     }
 
-    function seleccionarClienteImpuesto(data) {
-        clienteSel = data;
-        lblClienteImpuesto.textContent = `${data.codigo} - ${data.nombre} (${data.tipo})`;
+    function seleccionarproductoImpuesto(data) {
+        productoSel = data;
+        lblproductoImpuesto.textContent = `${data.codigo} - ${data.Descripcion} (${data.tipo})`;
         if (data.tipo !== 'empresa') {
-            msgTipoCliente.textContent = 'El Impuesto a las Actividades Económicas requiere un cliente de tipo empresa.';
-            msgTipoCliente.classList.remove('d-none');
+            msgTipoproducto.textContent = 'El Impuesto a las Actividades Económicas requiere un producto de tipo empresa.';
+            msgTipoproducto.classList.remove('d-none');
             fsPeriodo.disabled = true;
         } else {
-            msgTipoCliente.classList.add('d-none');
+            msgTipoproducto.classList.add('d-none');
             fsPeriodo.disabled = false;
         }
         limpiarPeriodo();
@@ -367,7 +368,7 @@
 
     function datosPeriodo() {
         return {
-            idCliente: clienteSel ? clienteSel.idCliente : '',
+            idproducto: productoSel ? productoSel.idproducto : '',
             idProducto: cboProducto.value,
             desde: txtDesde.value,
             hasta: txtHasta.value,
@@ -380,7 +381,7 @@
 
     // RF 17, 19 y 20: recalcular al cambiar monto, producto o fecha de inicio
     async function calcularPeriodo() {
-        if (!clienteSel || clienteSel.tipo !== 'empresa') return;
+        if (!productoSel || productoSel.tipo !== 'empresa') return;
         if (!txtMonto.value && !cboProducto.value) return;
         let res = await postJSON('/calcular', datosPeriodo());
         mostrarDetalle(res);
@@ -409,8 +410,8 @@
     }
 
     async function cargarPeriodos() {
-        if (!clienteSel) return;
-        let r = await fetch(`/periodos?idCliente=${clienteSel.idCliente}`), d = await r.json();
+        if (!productoSel) return;
+        let r = await fetch(`/periodos?idproducto=${productoSel.idproducto}`), d = await r.json();
         tblPeriodos.innerHTML = d.periodos.map(p => `
             <tr>
                 <td>${p.desde}</td>
@@ -466,9 +467,9 @@
 
 
     btnCobro.addEventListener('click', async () => {
-        if (!clienteSel) { alert('Seleccione un cliente.'); return; }
+        if (!productoSel) { alert('Seleccione un producto.'); return; }
         if (!cboProducto.value) { alert('Confirme si la actividad corresponde a comercio o industria.'); return; }
-        let q = `idCliente=${clienteSel.idCliente}&idProducto=${cboProducto.value}` +
+        let q = `idproducto=${productoSel.idproducto}&idProducto=${cboProducto.value}` +
             `&desde=${txtCobroDesde.value}&hasta=${txtCobroHasta.value}`;
         let r = await fetch(`/cobro?${q}`), res = await r.json();
         if (!res.ok) {
